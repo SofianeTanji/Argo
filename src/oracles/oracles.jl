@@ -15,6 +15,12 @@ struct ProximalOracle <: Oracle
     f::Function
 end
 
+struct InexactProximalOracle <: Oracle
+    f::Function
+    tolerance::Union{Nothing,Real}
+    cost::Union{Nothing,Real}
+end
+
 include("utils.jl")
 
 # === BEGIN MACROS === #
@@ -31,7 +37,6 @@ end
 # === END MACROS === #
 
 # PUBLIC API
-export Oracle, EvaluationOracle, DerivativeOracle,
-    get_oracle, get_oracle_for_expression, @oracle
+export Oracle, EvaluationOracle, DerivativeOracle, ProximalOracle, InexactProximalOracle, get_oracle, get_oracle_for_expression, @oracle
 
 end

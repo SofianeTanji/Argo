@@ -41,9 +41,7 @@ export Template, Method, match_methods
 include("registry.jl")
 include("matching.jl")
 function __init__()
-    # Determine the directory in which this file resides
     local dir = dirname(@__FILE__)
-    # Attempt to load built‑in templates and methods
     load_templates!(joinpath(dir, "templates"))
     load_methods!(joinpath(dir, "methods"))
 end

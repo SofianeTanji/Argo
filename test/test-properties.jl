@@ -23,4 +23,10 @@ using Test
 
     inferred_sub = infer_properties(f(x) - f(x))
     @test isempty(inferred_sub)
+
+    # Test for (Smooth, Lipschitz) ∘ Lipschitz => Smooth
+    @property f Smooth(2.0) Lipschitz(3.0)
+    @property g Lipschitz(4.0)
+    inferred_comp_lip = infer_properties(f(g(x)))
+    @test Smooth(32.0) in inferred_comp_lip
 end

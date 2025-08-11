@@ -130,11 +130,16 @@ function combine_maximum(::Convex, ::Convex)
     return Convex()
 end
 combine_maximum(p1::StronglyConvex, p2::StronglyConvex) = StronglyConvex(min_interval(p1.interval, p2.interval))
+combine_maximum(p1::Convex, p2::StronglyConvex) = p1
+combine_maximum(p1::StronglyConvex, p2::Convex) = p2
+combine_maximum(p1::Lipschitz, p2::Lipschitz) = Lipschitz(max_interval(p1.interval, p2.interval))
 # === END MAXIMUM === #
 # === BEGIN MINIMUM === #
 function combine_minimum(p1::Property, p2::Property)
     return nothing
 end
+combine_minimum(p1::Lipschitz, p2::Lipschitz) = Lipschitz(max_interval(p1.interval, p2.interval))
+
 # === END MINIMUM === #
 # === BEGIN COMPOSITION === #
 function combine_composition(f::Property, g::Property)
@@ -196,3 +201,31 @@ function combine_composition(p1::Lipschitz, p2::Linear)
     return Lipschitz(Interval(new_lo, new_hi))
 end
 # === END COMPOSITION === #
+
+
+# === BEGIN COMPOSITION WITH MULTIPLE PROPERTIES === #
+# Fallback for any combination that doesn't have a specific rule.
+_infer_composition(f_sig::Type, g_sig::Type, f_props::Set, g_props::Set) = Set{Property}()
+
+# Rule 1: f is Convex and MonotonicallyIncreasing, g is Convex => f ∘ g is Convex
+function _infer_composition(
+    ::Type{Tuple{Convex,MonotonicallyIncreasing}},
+    ::Type{Tuple{Convex}},
+    f_props::Set, g_props::Set
+)
+    return Set{Property}([Convex()])
+end
+
+# Rule 2: f is Lipschitz and Smooth, g is Smooth => f ∘ g is Smooth
+function _infer_composition(
+    ::Type{Tuple{Lipschitz,Smooth}},
+    ::Type{Tuple{Smooth}},
+    f_props::Set, g_props::Set
+)
+    f_lip = get_property(f_props, Lipschitz)
+    g_smooth = get_property(g_props, Smooth)
+
+    new_L = f_lip.interval.hi * g_smooth.interval.hi # TODO : fix
+    return Set{Property}([Smooth(new_L)])
+end
+# === END COMPOSITION WITH MULTIPLE PROPERTIES === #

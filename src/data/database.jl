@@ -13,10 +13,10 @@ A `Template` is a structure in the Argo framework. It includes:
    property sets and returns a named tuple mapping constant names to values or intervals.
 """
 struct Template
-    name::Symbol
-    num_components::Int
-    requirement::Function
-    extract_constants::Function
+  name::Symbol
+  num_components::Int
+  requirement::Function
+  extract_constants::Function
 end
 
 """
@@ -31,9 +31,9 @@ Additional method parameters (e.g. step‑size formulas) can be encoded
 inside the `complexity` function’s closure.
 """
 struct Method
-    name::Symbol
-    template_names::Vector{Symbol}
-    complexity::Function
+  name::Symbol
+  template_names::Vector{Symbol}
+  complexity::Function
 end
 
 export Template, Method, match_methods
@@ -41,9 +41,9 @@ export Template, Method, match_methods
 include("registry.jl")
 include("matching.jl")
 function __init__()
-    local dir = dirname(@__FILE__)
-    load_templates!(joinpath(dir, "templates"))
-    load_methods!(joinpath(dir, "methods"))
+  local dir = dirname(@__FILE__)
+  load_templates!(joinpath(dir, "templates"))
+  load_methods!(joinpath(dir, "methods"))
 end
-
+export register_method!, register_template!
 end

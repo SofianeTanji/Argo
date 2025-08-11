@@ -35,6 +35,7 @@ max_interval(i1::Interval{T}, i2::Interval{T}) where {T<:Real} =
 include("types.jl")
 include("utils.jl")
 include("algebra.jl")
+
 # === BEGIN MACROS === #
 macro property(fn, props...)
     ft_sym = esc(fn)

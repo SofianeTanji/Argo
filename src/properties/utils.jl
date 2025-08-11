@@ -71,6 +71,18 @@ function infer_properties(expr::Language.Expression)
         return acc
 
     elseif expr isa Language.Composition
+        function infer_composition_multi(f_props::Set, g_props::Set)
+            # Create a sorted tuple of types
+            f_types = Tuple(sort([typeof(p) for p in f_props], by=string))
+            g_types = Tuple(sort([typeof(p) for p in g_props], by=string))
+
+            # Create a Tuple TYPE from the types, e.g., Tuple{Convex, MonotonicallyIncreasing}
+            f_sig_type = Tuple{f_types...}
+            g_sig_type = Tuple{g_types...}
+
+            # Pass the types themselves to the worker function in algebra.jl
+            return _infer_composition(f_sig_type, g_sig_type, f_props, g_props)
+        end
         p_outer = get_properties(expr.outer)
         p_inner = infer_properties(expr.inner)
         result = Set{Property}()
@@ -80,6 +92,8 @@ function infer_properties(expr::Language.Expression)
                 push!(result, combined)
             end
         end
+
+        union!(result, infer_composition_multi(p_outer, p_inner))
         return result
 
     else

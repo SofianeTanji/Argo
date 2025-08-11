@@ -64,5 +64,6 @@ function match_methods(expr::Language.Expression)
             end
         end
     end
+    sort!(results, by=x -> x.bound)
     return results
 end

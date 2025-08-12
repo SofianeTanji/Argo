@@ -1,9 +1,5 @@
-"""
-Inexact operators: support creation of expressions with oracles that return approximate prox or gradient values.
-"""
 function inexact_operators(expr::Language.Expression)
-    # For now, returns the original expression.
-    # TODO: Implement the inexact operators logic.
+    # Not sure it is still required because now inexact prox is automatically deduced in Oracles module.
     return expr
 end
 

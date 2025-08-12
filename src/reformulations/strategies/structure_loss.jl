@@ -1,6 +1,6 @@
 function structure_loss(expr::Language.Expression)
-    # For now, returns the original expression.
-    # TODO: Implement the structure loss logic.
+    # not sure it is needed anymore.
+    # need to check if the rebalancing automatically handles structure loss.
     return expr
 end
 

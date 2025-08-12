@@ -6,7 +6,7 @@ include("oracles/oracles.jl")
 include("data/database.jl")
 include("reformulations/reformulations.jl")
 
-using .Language, .Properties, .Oracles, .Data, .Reformulations
+using .Language, .Properties, .Oracles, .Database, .Reformulations
 
 export recommend, @variable, @func, @property
 
@@ -58,13 +58,13 @@ function recommend(expr::Language.Expression)
     # Match all unique formulations against the database
     all_results = []
     for e in expressions_to_check
-        append!(all_results, Data.match_methods(e))
+        append!(all_results, Database.match_methods(e))
     end
 
     # Sort all collected results by their performance bound
     sort!(all_results, by=x -> x.bound)
 
-    return all_results
+    return all_results, expressions_to_check
 end
 
 end

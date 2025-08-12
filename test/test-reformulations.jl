@@ -63,4 +63,24 @@ using Test
         @test occursin("q(x)", str_expr)
         @test occursin("-q(x)", str_expr)
     end
+
+    @testset "Structure Loss" begin
+        @variable x::R()
+        @func f(R(), R())
+        @func g(R(), R())
+        @property f Convex()
+        @property g Convex()
+        expr = f(x) + g(x)
+        reformulated_exprs = Argo.Reformulations.structure_loss(expr)
+
+        @test reformulated_exprs isa Vector{Language.FunctionCall}
+        @test length(reformulated_exprs) == 1
+
+        reformulated_expr = reformulated_exprs[1]
+        @test reformulated_expr isa Language.FunctionCall
+        @test reformulated_expr.func.name == :collapsed_function
+
+        props = Properties.get_properties(reformulated_expr.func)
+        @test any(p isa Properties.Convex for p in props)
+    end
 end

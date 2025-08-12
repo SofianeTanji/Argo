@@ -100,3 +100,18 @@ function infer_properties(expr::Language.Expression)
         return Set{Property}()
     end
 end
+
+function infer_codomain(expr::Language.Expression)
+    if expr isa Language.FunctionCall
+        return expr.func.codomain
+    elseif expr isa Language.Addition || expr isa Language.Subtraction || expr isa Language.Maximum || expr isa Language.Minimum
+        return infer_codomain(expr.terms[1])
+    elseif expr isa Language.Composition
+        return infer_codomain(expr.outer)
+    elseif expr isa Language.Negation
+        return infer_codomain(expr.expr)
+    else
+        # Default
+        return Language.Space(:R, 1)
+    end
+end

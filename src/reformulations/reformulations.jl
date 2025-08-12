@@ -4,6 +4,8 @@ using ..Language
 using ..Properties
 using ..Oracles
 
+include("utils.jl")
+
 const STRATEGIES = Function[]
 
 function register_strategy!(fun::Function)

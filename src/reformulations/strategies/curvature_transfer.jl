@@ -1,26 +1,3 @@
-function find_variable(expr::Language.Expression)
-    if expr isa Language.Variable
-        return expr
-    elseif expr isa Language.FunctionCall
-        for arg in expr.args
-            var = find_variable(arg)
-            if var !== nothing
-                return var
-            end
-        end
-    elseif expr isa Language.Addition
-        for term in expr.terms
-            var = find_variable(term)
-            if var !== nothing
-                return var
-            end
-        end
-    elseif expr isa Language.Composition
-        return find_variable(expr.inner)
-    end
-    return nothing
-end
-
 function curvature_transfer(expr::Language.Expression, ρ::Float64)
     if expr isa Language.Addition && length(expr.terms) >= 2
         reformulations = Language.Expression[]

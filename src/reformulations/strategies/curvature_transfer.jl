@@ -1,4 +1,4 @@
-function curvature_transfer(expr::Language.Expression, ρ::Float64)
+function curvature_transfer(expr::Language.Expression, ρ::Float64=1.0)
     if expr isa Language.Addition && length(expr.terms) >= 2
         reformulations = Language.Expression[]
         var = find_variable(expr)

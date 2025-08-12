@@ -78,3 +78,7 @@ function min(a::Expression, b::Expression)
         return Minimum([a, b])
     end
 end
+
+function Base.show(io::IO, add::Addition)
+    print(io, join(add.terms, " + "))
+end

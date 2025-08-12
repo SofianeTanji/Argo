@@ -53,4 +53,22 @@ end
 # PUBLIC API
 export Space, Variable, FunctionType, FunctionCall,
     Addition, Composition, @variable, @func
+
+Base.show(io::IO, var::Variable) = print(io, var.name)
+
+"""
+    @function(name, domain, codomain)
+
+A macro to define a function type.
+"""
+function Base.show(io::IO, expr::Expression)
+    if expr.head == :call
+        print(io, expr.op.name, "(", join(expr.args, ", "), ")")
+    elseif expr.head == :+
+        print(io, join(expr.terms, " + "))
+    else
+        print(io, "Expression(", expr.head, ", ", expr.op, ", ", expr.args, ")")
+    end
+end
+
 end

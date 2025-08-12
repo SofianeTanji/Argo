@@ -1,9 +1,16 @@
+using Combinatorics
+
 function commutativity(expr::Language.Expression)
     if expr isa Language.Addition
-        sorted_terms = sort(expr.terms; by=t -> string(t))
-        return Language.Addition(sorted_terms)
+        if length(expr.terms) <= 1
+            return [expr]
+        end
+
+        permuted_term_sets = permutations(expr.terms)
+
+        return [Language.Addition(p) for p in permuted_term_sets]
     else
-        return expr
+        return [expr]
     end
 end
 

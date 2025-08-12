@@ -82,3 +82,23 @@ end
 function Base.show(io::IO, add::Addition)
     print(io, join(add.terms, " + "))
 end
+
+function Base.show(io::IO, fc::FunctionCall)
+    print(io, fc.func.name, "(", join(fc.args, ", "), ")")
+end
+
+function Base.show(io::IO, comp::Composition)
+    print(io, comp.outer.name, "(", comp.inner, ")")
+end
+
+function Base.show(io::IO, neg::Negation)
+    print(io, "-", neg.expr)
+end
+
+function Base.show(io::IO, m::Maximum)
+    print(io, "max(", join(m.terms, ", "), ")")
+end
+
+function Base.show(io::IO, m::Minimum)
+    print(io, "min(", join(m.terms, ", "), ")")
+end

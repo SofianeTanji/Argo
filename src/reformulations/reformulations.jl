@@ -1,6 +1,8 @@
 module Reformulations
 
 using ..Language
+using ..Properties
+using ..Oracles
 
 const STRATEGIES = Function[]
 

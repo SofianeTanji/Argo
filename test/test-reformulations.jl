@@ -42,4 +42,25 @@ using Test
         end
         @test found
     end
+
+    @testset "Curvature Transfer" begin
+        @variable x::R()
+        @func f(R(), R())
+        @func g(R(), R())
+        expr = f(x) + g(x)
+        rho = 1.0
+        reformulated_exprs = Argo.Reformulations.curvature_transfer(expr, rho)
+
+        @test reformulated_exprs isa Vector{Argo.Language.Expression}
+        @test length(reformulated_exprs) == 1
+
+        reformulated_expr = reformulated_exprs[1]
+        @test reformulated_expr isa Argo.Language.Addition
+
+        str_expr = string(reformulated_expr)
+        @test occursin("f(x)", str_expr)
+        @test occursin("g(x)", str_expr)
+        @test occursin("q(x)", str_expr)
+        @test occursin("-q(x)", str_expr)
+    end
 end

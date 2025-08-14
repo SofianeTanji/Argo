@@ -21,10 +21,15 @@ function curvature_transfer(expr::Language.Expression, ρ::Float64=1.0)
 
         for i in 1:length(expr.terms)
             for j in (i+1):length(expr.terms)
+                if Language.has_annotation(expr, :curvature_transfer, (i, j))
+                    continue
+                end
                 new_terms = copy(expr.terms)
                 new_terms[i] = new_terms[i] + q_call
                 new_terms[j] = new_terms[j] - q_call
-                push!(reformulations, Language.Addition(new_terms))
+                new_expr = Language.Addition(new_terms)
+                new_expr = Language.add_annotation(new_expr, :curvature_transfer, (i, j))
+                push!(reformulations, new_expr)
             end
         end
         return reformulations

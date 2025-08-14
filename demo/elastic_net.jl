@@ -1,3 +1,4 @@
+using Revise
 using Argo
 using Argo.Properties
 using Argo.Oracles
@@ -37,7 +38,7 @@ println("-"^40)
 
 # Call the main recommend function to get a sorted list of applicable methods.
 recommendations, all_reformulations = recommend(expr)
-length(all_reformulations)
+all_reformulations
 # 4. Display the results
 # ======================
 

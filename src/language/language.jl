@@ -9,6 +9,10 @@ end
 struct Variable <: Expression
     name::Symbol
     space::Space
+    annotations::Dict{Any,Any}
+    Variable(name::Symbol, space::Space) = new(name, space, Dict{Any,Any}())
+    Variable(name, space, annotations) = new(name, space, annotations)
+    Variable(name, space; annotations=Dict()) = new(name, space, annotations)
 end
 
 struct FunctionType
@@ -20,7 +24,7 @@ struct FunctionType
 end
 
 include("operations.jl")
-
+include("annotations.jl")
 # === BEGIN MACROS === #
 macro variable(expr)
     name = expr.args[1]
@@ -52,7 +56,8 @@ end
 
 # PUBLIC API
 export Space, Variable, FunctionType, FunctionCall,
-    Addition, Composition, @variable, @func
+    Addition, Composition, @variable, @func,
+    has_annotation, add_annotation, get_annotations, set_annotations
 
 Base.show(io::IO, var::Variable) = print(io, var.name)
 

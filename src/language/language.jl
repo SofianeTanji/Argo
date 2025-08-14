@@ -6,13 +6,20 @@ struct Space
     dim::Union{Int,Nothing}
 end
 
+const _expression_handle_counter = Ref(0)
+next_handle() = _expression_handle_counter[] += 1
+
 struct Variable <: Expression
+    handle::Int
     name::Symbol
     space::Space
     annotations::Dict{Any,Any}
-    Variable(name::Symbol, space::Space) = new(name, space, Dict{Any,Any}())
-    Variable(name, space, annotations) = new(name, space, annotations)
-    Variable(name, space; annotations=Dict()) = new(name, space, annotations)
+    Variable(name::Symbol, space::Space, annotations::Dict{Any,Any}) = new(next_handle(), name, space, annotations)
+    Variable(handle::Int, name::Symbol, space::Space, annotations::Dict{Any,Any}) = new(handle, name, space, annotations)
+end
+
+function Variable(name::Symbol, space::Space; annotations=Dict{Any,Any}())
+    return Variable(name, space, annotations)
 end
 
 struct FunctionType

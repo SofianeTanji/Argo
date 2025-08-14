@@ -1,26 +1,32 @@
 struct FunctionCall <: Expression
+    handle::Int
     func::FunctionType
     args::Vector{Expression}
     annotations::Dict{Any,Any}
-    FunctionCall(func, args, annotations) = new(func, args, annotations)
-    FunctionCall(func, args; annotations=Dict()) = new(func, args, annotations)
+    FunctionCall(handle::Int, func, args, annotations) = new(handle, func, args, annotations)
+    FunctionCall(func, args, annotations) = new(next_handle(), func, args, annotations)
 end
+FunctionCall(func, args; annotations=Dict()) = FunctionCall(func, args, annotations)
 
 
 struct Addition <: Expression
+    handle::Int
     terms::Vector{Expression}
     annotations::Dict{Any,Any}
-    Addition(terms, annotations) = new(terms, annotations)
-    Addition(terms; annotations=Dict()) = new(terms, annotations)
+    Addition(handle::Int, terms, annotations) = new(handle, terms, annotations)
+    Addition(terms, annotations) = new(next_handle(), terms, annotations)
 end
+Addition(terms; annotations=Dict()) = Addition(terms, annotations)
 
 struct Composition <: Expression
+    handle::Int
     outer::FunctionType
     inner::Expression
     annotations::Dict{Any,Any}
-    Composition(outer, inner, annotations) = new(outer, inner, annotations)
-    Composition(outer, inner; annotations=Dict()) = new(outer, inner, annotations)
+    Composition(handle::Int, outer, inner, annotations) = new(handle, outer, inner, annotations)
+    Composition(outer, inner, annotations) = new(next_handle(), outer, inner, annotations)
 end
+Composition(outer, inner; annotations=Dict()) = Composition(outer, inner, annotations)
 
 function (ft::FunctionType)(args::Expression...)
     if length(args) == 1
@@ -33,33 +39,41 @@ function (ft::FunctionType)(args::Expression...)
 end
 
 struct Subtraction <: Expression
+    handle::Int
     a::Expression
     b::Expression
     annotations::Dict{Any,Any}
-    Subtraction(a, b, annotations) = new(a, b, annotations)
-    Subtraction(a, b; annotations=Dict()) = new(a, b, annotations)
+    Subtraction(handle::Int, a, b, annotations) = new(handle, a, b, annotations)
+    Subtraction(a, b, annotations) = new(next_handle(), a, b, annotations)
 end
+Subtraction(a, b; annotations=Dict()) = Subtraction(a, b, annotations)
 
 struct Maximum <: Expression
+    handle::Int
     terms::Vector{Expression}
     annotations::Dict{Any,Any}
-    Maximum(terms, annotations) = new(terms, annotations)
-    Maximum(terms; annotations=Dict()) = new(terms, annotations)
+    Maximum(handle::Int, terms, annotations) = new(handle, terms, annotations)
+    Maximum(terms, annotations) = new(next_handle(), terms, annotations)
 end
+Maximum(terms; annotations=Dict()) = Maximum(terms, annotations)
 
 struct Minimum <: Expression
+    handle::Int
     terms::Vector{Expression}
     annotations::Dict{Any,Any}
-    Minimum(terms, annotations) = new(terms, annotations)
-    Minimum(terms; annotations=Dict()) = new(terms, annotations)
+    Minimum(handle::Int, terms, annotations) = new(handle, terms, annotations)
+    Minimum(terms, annotations) = new(next_handle(), terms, annotations)
 end
+Minimum(terms; annotations=Dict()) = Minimum(terms, annotations)
 
 struct Negation <: Expression
+    handle::Int
     expr::Expression
     annotations::Dict{Any,Any}
-    Negation(expr, annotations) = new(expr, annotations)
-    Negation(expr; annotations=Dict()) = new(expr, annotations)
+    Negation(handle::Int, expr, annotations) = new(handle, expr, annotations)
+    Negation(expr, annotations) = new(next_handle(), expr, annotations)
 end
+Negation(expr; annotations=Dict()) = Negation(expr, annotations)
 
 import Base: +, -, max, min
 +(a::Expression, b::Expression) = Addition([a, b], merge(a.annotations, b.annotations))

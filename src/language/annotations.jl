@@ -4,17 +4,22 @@ export has_annotation, add_annotation, get_annotations, set_annotations
 get_annotations(e::Expression) = e.annotations
 
 function set_annotations(e::Expression, annotations)
-    fields = fieldnames(typeof(e))
-    new_fields = Dict{Symbol,Any}()
+    T = typeof(e)
+    fields = fieldnames(T)
+
+    # Create a new instance of the expression with the old handle and new annotations
+    constructor_args = []
     for f in fields
-        if f == :annotations
-            new_fields[f] = annotations
+        if f == :handle
+            push!(constructor_args, e.handle)
+        elseif f == :annotations
+            push!(constructor_args, annotations)
         else
-            new_fields[f] = getfield(e, f)
+            push!(constructor_args, getfield(e, f))
         end
     end
-    # We need to splat the dictionary into keyword arguments
-    return typeof(e)(; new_fields...)
+
+    return T(constructor_args...)
 end
 
 has_annotation(e::Expression, key, val) = haskey(e.annotations, key) && e.annotations[key] == val

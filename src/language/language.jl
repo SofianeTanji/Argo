@@ -6,20 +6,9 @@ struct Space
     dim::Union{Int,Nothing}
 end
 
-const _expression_handle_counter = Ref(0)
-next_handle() = _expression_handle_counter[] += 1
-
 struct Variable <: Expression
-    handle::Int
     name::Symbol
     space::Space
-    annotations::Dict{Any,Any}
-    Variable(name::Symbol, space::Space, annotations::Dict{Any,Any}) = new(next_handle(), name, space, annotations)
-    Variable(handle::Int, name::Symbol, space::Space, annotations::Dict{Any,Any}) = new(handle, name, space, annotations)
-end
-
-function Variable(name::Symbol, space::Space; annotations=Dict{Any,Any}())
-    return Variable(name, space, annotations)
 end
 
 struct FunctionType
@@ -31,7 +20,7 @@ struct FunctionType
 end
 
 include("operations.jl")
-include("annotations.jl")
+
 # === BEGIN MACROS === #
 macro variable(expr)
     name = expr.args[1]
@@ -63,8 +52,7 @@ end
 
 # PUBLIC API
 export Space, Variable, FunctionType, FunctionCall,
-    Addition, Composition, @variable, @func,
-    has_annotation, add_annotation, get_annotations, set_annotations
+    Addition, Composition, @variable, @func
 
 Base.show(io::IO, var::Variable) = print(io, var.name)
 

@@ -20,51 +20,42 @@ Returns a sorted list of named tuples, each containing a viable method,
 the formulation it applies to, and its theoretical performance bound.
 """
 function recommend(expr::Language.Expression)
-    # Set checks uniqueness (as long as string representations are correct).
     processed_strings = Set{String}()
-    expressions_to_check = [expr]
+    queue = [expr] # FIFO
+    discovered = [expr]
+    push!(processed_strings, string(expr))
 
-    # fixed-point iteration to generate reformulations.
-    # computes the orbit
-    limit = 10
-    for _ in 1:limit
-        new_exprs_found = false
-        current_exprs = copy(expressions_to_check)
-        for e in current_exprs
-            for s in Reformulations.list_strategies()
-                # note: what about parametrized strategies?
-                try
-                    for new_e in s(e)
-                        new_e_str = string(new_e)
-                        if !(new_e_str in processed_strings)
-                            push!(expressions_to_check, new_e)
-                            push!(processed_strings, new_e_str)
-                            new_exprs_found = true
-                        end
+    while !isempty(queue)
+        current = popfirst!(queue)
+        for s in Reformulations.list_strategies()
+            # note: what about parametrized strategies?
+            try
+                for new_e in s(current)
+                    new_e_str = string(new_e)
+                    if !(new_e_str in processed_strings)
+                        push!(queue, new_e)
+                        push!(discovered, new_e)
+                        push!(processed_strings, new_e_str)
                     end
-                catch e
-                    # Catch method errors if a strategy cannot be applied.
-                    if e isa MethodError
-                        continue
-                    else
-                        rethrow()
-                    end
+                end
+            catch err
+                if err isa MethodError
+                    continue
+                else
+                    rethrow()
                 end
             end
         end
-        !new_exprs_found && break
     end
 
-    # Match all unique formulations against the database
     all_results = []
-    for e in expressions_to_check
+    for e in discovered
         append!(all_results, Database.match_methods(e))
     end
 
-    # Sort all collected results by their performance bound
     sort!(all_results, by=x -> x.bound)
 
-    return all_results, expressions_to_check
+    return all_results, discovered
 end
 
 end
